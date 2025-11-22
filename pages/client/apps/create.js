@@ -1,0 +1,132 @@
+// Create App Page
+import { useState } from 'react';
+import { useRouter } from 'next/router';
+import Navbar from '../../../components/Navbar';
+import { apiPost } from '../../../utils/apiClient';
+
+export default function CreateApp() {
+    const router = useRouter();
+    const [formData, setFormData] = useState({
+        app_name: '',
+        description: '',
+        secret: '',
+    });
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
+
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
+        setLoading(true);
+
+        const result = await apiPost('postAddApps', formData);
+        setLoading(false);
+
+        if (result.success) {
+            router.push('/client/apps');
+        } else {
+            setError(result.error || 'Failed to create app');
+        }
+    };
+
+    return (
+        <>
+            <Navbar />
+            <div className="container" style={{ paddingTop: '2rem' }}>
+                <div style={{ marginBottom: '2rem' }}>
+                    <h1>Create New App</h1>
+                    <p style={{ color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
+                        Add a new application to your portal
+                    </p>
+                </div>
+
+                <div className="card" style={{ maxWidth: '600px' }}>
+                    {error && (
+                        <div style={{
+                            background: 'rgba(239, 68, 68, 0.1)',
+                            border: '1px solid rgba(239, 68, 68, 0.2)',
+                            color: '#fca5a5',
+                            padding: '0.75rem',
+                            borderRadius: '8px',
+                            marginBottom: '1.5rem',
+                        }}>
+                            {error}
+                        </div>
+                    )}
+
+                    <form onSubmit={handleSubmit}>
+                        <div style={{ marginBottom: '1.5rem' }}>
+                            <label className="small" style={{ display: 'block', marginBottom: '0.5rem', marginLeft: '0.25rem' }}>
+                                App Name *
+                            </label>
+                            <input
+                                name="app_name"
+                                className="input"
+                                placeholder="My Awesome App"
+                                value={formData.app_name}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+
+                        <div style={{ marginBottom: '1.5rem' }}>
+                            <label className="small" style={{ display: 'block', marginBottom: '0.5rem', marginLeft: '0.25rem' }}>
+                                Description
+                            </label>
+                            <textarea
+                                name="description"
+                                className="input"
+                                placeholder="Brief description of your app..."
+                                value={formData.description}
+                                onChange={handleChange}
+                                rows="4"
+                                style={{ resize: 'vertical' }}
+                            />
+                        </div>
+
+                        <div style={{ marginBottom: '2rem' }}>
+                            <label className="small" style={{ display: 'block', marginBottom: '0.5rem', marginLeft: '0.25rem' }}>
+                                Secret Key *
+                            </label>
+                            <input
+                                name="secret"
+                                type="password"
+                                className="input"
+                                placeholder="Enter a secure secret key"
+                                value={formData.secret}
+                                onChange={handleChange}
+                                required
+                            />
+                            <small style={{ color: 'var(--text-secondary)', marginLeft: '0.25rem' }}>
+                                This will be used for API authentication
+                            </small>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '1rem' }}>
+                            <button
+                                type="button"
+                                className="btn-ghost"
+                                onClick={() => router.push('/client/apps')}
+                                style={{ flex: 1 }}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                className="button"
+                                disabled={loading}
+                                style={{ flex: 1 }}
+                            >
+                                {loading ? 'Creating...' : 'Create App'}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </>
+    );
+}

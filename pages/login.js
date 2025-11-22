@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import Navbar from "../components/Navbar";
+import API_CONFIG from "../config/api";
 
 export default function Login() {
   const router = useRouter();
@@ -14,10 +15,11 @@ export default function Login() {
     setErr("");
 
     try {
-      const r = await fetch("/api/auth/login", {
+      const r = await fetch(API_CONFIG.getUrl('login'), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
+        credentials: 'include', // Important: enables cookies from backend
       });
 
       const data = await r.json();

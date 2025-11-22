@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import Navbar from "../components/Navbar";
+import API_CONFIG from "../config/api";
 
 export default function Signup() {
   const router = useRouter();
@@ -16,6 +17,45 @@ export default function Signup() {
     confirmPassword: "",
   });
   const [err, setErr] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const onChange = (e) =>
+    setForm((p) => ({ ...p, [e.target.name]: e.target.value }));
+
+  async function submit(e) {
+    e.preventDefault();
+    setErr("");
+    setSuccessMsg("");
+
+    if (form.password !== form.confirmPassword) {
+      setErr("Password and confirm password do not match.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const r = await fetch(API_CONFIG.getUrl('signup'), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+        credentials: 'include', // Important: enables cookies from backend
+      });
+
+      const data = await r.json();
+      setLoading(false);
+
+      if (data.status === 'success') {
+        setSuccessMsg(data.message || "Signup successful. Redirecting...");
+        setTimeout(() => router.push("/login"), 1200);
+      } else {
+        setErr(data.message || "Signup failed");
+      }
+    } catch (error) {
+      setLoading(false);
+      setErr(error.message || "Network error");
+    }
+  }
 
   return (
     <>

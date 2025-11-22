@@ -75,6 +75,15 @@ export default function Navbar() {
           <Link href="/client/apps" className="nav-link" style={{ marginLeft: 0 }} onClick={() => setIsMenuOpen(false)}>
             Apps
           </Link>
+          <Link href="/client/users" className="nav-link" style={{ marginLeft: 0 }} onClick={() => setIsMenuOpen(false)}>
+            Users
+          </Link>
+          <Link href="/client/roles" className="nav-link" style={{ marginLeft: 0 }} onClick={() => setIsMenuOpen(false)}>
+            Roles
+          </Link>
+          <Link href="/client/settings" className="nav-link" style={{ marginLeft: 0 }} onClick={() => setIsMenuOpen(false)}>
+            Settings
+          </Link>
         </div>
       )}
     </nav>

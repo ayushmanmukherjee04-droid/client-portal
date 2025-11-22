@@ -259,3 +259,30 @@ Expression expected
  GET /api/proxy/getApp 200 in 7ms (compile: 3ms, render: 4ms)
  GET /_next/data/development/client/apps.json 200 in 30ms (compile: 7ms, render: 23ms)
  GET /_next/data/development/client/dashboard.json 200 in 12ms (compile: 8ms, render: 4ms)
+ Γ£ô Compiled in 954ms
+ ΓÜá Fast Refresh had to perform a full reload due to a runtime error.
+ ΓÜá Fast Refresh had to perform a full reload due to a runtime error.
+ ΓÜá Fast Refresh had to perform a full reload due to a runtime error.
+ ΓÜá Fast Refresh had to perform a full reload due to a runtime error.
+ ΓÜá Fast Refresh had to perform a full reload due to a runtime error.
+ ΓÜá Fast Refresh had to perform a full reload due to a runtime error.
+ GET /login 200 in 1546ms (compile: 1296ms, render: 250ms)
+ GET /login 200 in 72ms (compile: 14ms, render: 58ms)
+ Γ£ô Compiled in 57ms
+ Γ£ô Compiled in 186ms
+ Γ£ô Compiled in 132ms
+ GET /signup 200 in 598ms (compile: 449ms, render: 149ms)
+ GET /signup 200 in 535ms (compile: 274ms, render: 262ms)
+ Γ£ô Compiled in 292ms
+ GET /_next/data/development/client/dashboard.json 200 in 69ms (compile: 32ms, render: 38ms)
+ GET /api/proxy/getApp 200 in 21ms (compile: 6ms, render: 15ms)
+ GET /_next/data/development/client/apps.json 200 in 181ms (compile: 16ms, render: 165ms)
+ Γ£ô Compiled in 308ms
+ Γ£ô Compiled in 502ms
+ Γ£ô Compiled in 121ms
+ GET /api/manage/getApp 404 in 431ms (compile: 303ms, render: 128ms)
+ GET /api/manage/getApp 404 in 45ms (compile: 11ms, render: 34ms)
+ GET /api/manage/getRoles 404 in 37ms (compile: 11ms, render: 26ms)
+ GET /api/manage/getRoles 404 in 35ms (compile: 10ms, render: 24ms)
+ GET /_next/data/development/client/dashboard.json 200 in 116ms (compile: 103ms, render: 13ms)
+ GET / 200 in 155ms (compile: 101ms, render: 54ms)
