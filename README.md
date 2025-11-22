@@ -38,3 +38,74 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+
+
+
+# Client Portal — Frontend
+
+**Project:** Client Portal (React / Next.js — Pages Router)  
+**Purpose:** Frontend for client users to register, login, view available apps, request connection URL & token, and view profile.
+
+---
+
+## Quick repo contents
+
+- `pages/` — Next.js pages (login, signup, client dashboard, apps, connect page, profile)
+- `pages/api/proxy/` — Server-side proxy routes that forward to the backend (login, signup, getApp, getUrlAndToken, getProfile, logout)
+- `pages/api/mock/` — Local mock endpoints used for frontend testing (enabled by `USE_MOCK=true`)
+- `components/` — Reusable UI components (Navbar, Loader, ... )
+- `utils/backendClient.js` — Axios wrapper used by proxy routes
+- `styles/globals.css` — Global styling
+- `docs/api-reference.md` — API spec (copied from the file provided by the backend team)
+
+> **Local API spec file (same file you uploaded):**  
+> `/mnt/data/frontend-backend data connection (3).md`
+
+---
+
+## What we have completed (done)
+
+- Project scaffolded with Next.js (pages router).
+- Folder structure, pages, components and global styles implemented.
+- Server-side proxy routes implemented for all client flows.
+- Mock server routes (`pages/api/mock/*`) implemented and integrated via `USE_MOCK` env flag so frontend works without backend.
+- Login and signup flows (with redirects).
+- Protected SSR pages (dashboard, apps, profile) that check `access_token` cookie.
+- Apps listing and Connect page to request URL & token (masking & copy behavior).
+- README + docs folder (API spec copied to `docs/api-reference.md`).
+- Basic UI polish (card layout, inputs, buttons, token copy/hide).
+
+---
+
+## What remains / recommended next steps
+
+These are optional but recommended before production or handing over:
+
+1. **Switch to real backend**
+   - Set `USE_MOCK=false` and set `BACKEND_BASE_URL` to the provided backend URL (see Environment section).
+   - Test end-to-end and fix any field-name mismatches.
+
+2. **Add logout & token refresh flows**
+   - Ensure refresh token / token expiry flows are handled (proxy + client logic).
+
+3. **Improve UX**
+   - Add toast notifications, nicer loader, responsive layout, more CSS polish or Tailwind integration.
+
+4. **Security checks**
+   - Confirm cookie attributes in production (`secure: true`) and use HTTPS.
+   - Remove any secrets from commits.
+
+5. **Testing**
+   - Add unit/e2e tests (Jest / React Testing Library / Cypress) as needed.
+
+6. **Deployment**
+   - Deploy to Vercel or similar; set env vars there and test.
+
+---
+
+## Local setup (for your teammate)
+
+1. Clone the repo:
+   ```bash
+   git clone https://github.com/<your-username>/client-portal.git
+   cd client-portal
