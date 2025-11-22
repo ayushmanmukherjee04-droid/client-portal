@@ -14,7 +14,7 @@ export default function Login() {
     setErr("");
 
     try {
-      const r = await fetch("/api/proxy/login", {
+      const r = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -22,11 +22,15 @@ export default function Login() {
 
       const data = await r.json();
 
-      if (!r.ok || data.statusCode >= 400) {
+      console.log("Login response:", r.status, data);
+
+      if (!r.ok || (data.statusCode && data.statusCode >= 400)) {
+        console.log("Login failed condition met");
         setErr(data.message || "Login failed");
         return;
       }
 
+      console.log("Redirecting to dashboard...");
       router.push("/client/dashboard");
     } catch (error) {
       setErr(error.message || "Network error");
@@ -36,45 +40,50 @@ export default function Login() {
   return (
     <>
       <Navbar />
-      <div className="container">
-        <div className="card" style={{ maxWidth: 400, margin: "40px auto" }}>
-          <h2 style={{ marginBottom: 20 }}>Login</h2>
+      <div className="container" style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="card" style={{ width: '100%', maxWidth: '400px' }}>
+          <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Welcome Back</h2>
 
-          {err && <p style={{ color: "red" }}>{err}</p>}
+          {err && (
+            <div style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', color: '#fca5a5', padding: '0.75rem', borderRadius: '8px', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+              {err}
+            </div>
+          )}
 
           <form onSubmit={submit}>
-            <div style={{ marginBottom: 12 }}>
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label className="small" style={{ display: 'block', marginBottom: '0.5rem', marginLeft: '0.25rem' }}>Email Address</label>
               <input
                 type="email"
                 className="input"
-                placeholder="Email"
+                placeholder="name@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
 
-            <div style={{ marginBottom: 12 }}>
+            <div style={{ marginBottom: '2rem' }}>
+              <label className="small" style={{ display: 'block', marginBottom: '0.5rem', marginLeft: '0.25rem' }}>Password</label>
               <input
                 type="password"
                 className="input"
-                placeholder="Password"
+                placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </div>
 
-            <button className="button" type="submit" style={{ width: "100%" }}>
-              Login
+            <button className="button" type="submit" style={{ width: "100%", marginBottom: '1rem' }}>
+              Sign In
             </button>
 
-            {/* Redirect to Signup */}
             <button
               type="button"
               className="btn-ghost"
               onClick={() => router.push("/signup")}
-              style={{ marginTop: 12, width: "100%" }}
+              style={{ width: "100%", textAlign: 'center' }}
             >
               Don’t have an account? Sign up
             </button>

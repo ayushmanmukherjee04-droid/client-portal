@@ -16,86 +16,56 @@ export default function Signup() {
     confirmPassword: "",
   });
   const [err, setErr] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [successMsg, setSuccessMsg] = useState("");
-
-  const onChange = (e) =>
-    setForm((p) => ({ ...p, [e.target.name]: e.target.value }));
-
-  async function submit(e) {
-    e.preventDefault();
-    setErr("");
-    setSuccessMsg("");
-
-    if (form.password !== form.confirmPassword) {
-      setErr("Password and confirm password do not match.");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const r = await fetch("/api/proxy/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-
-      const data = await r.json();
-      setLoading(false);
-
-      if (!r.ok || data.statusCode >= 400) {
-        setErr(data.message || "Signup failed");
-        return;
-      }
-
-      setSuccessMsg(data.message || "Signup successful. Redirecting...");
-      setTimeout(() => router.push("/login"), 1200);
-    } catch (error) {
-      setLoading(false);
-      setErr(error.message || "Network error");
-    }
-  }
 
   return (
     <>
       <Navbar />
-      <div className="container">
-        <div className="card" style={{ maxWidth: 700, margin: "24px auto" }}>
-          <h2 style={{ marginBottom: 12 }}>Sign Up</h2>
+      <div className="container" style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="card" style={{ width: '100%', maxWidth: '700px' }}>
+          <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Create Account</h2>
 
-          {err && <p style={{ color: "red" }}>{err}</p>}
-          {successMsg && <p style={{ color: "green" }}>{successMsg}</p>}
+          {err && (
+            <div style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', color: '#fca5a5', padding: '0.75rem', borderRadius: '8px', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+              {err}
+            </div>
+          )}
+          {successMsg && (
+            <div style={{ background: 'rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.2)', color: '#86efac', padding: '0.75rem', borderRadius: '8px', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+              {successMsg}
+            </div>
+          )}
 
           <form onSubmit={submit}>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: 12,
-              }}
-            >
-              <input
-                name="firstName"
-                placeholder="First name"
-                className="input"
-                value={form.firstName}
-                onChange={onChange}
-                required
-              />
-              <input
-                name="lastName"
-                placeholder="Last name"
-                className="input"
-                value={form.lastName}
-                onChange={onChange}
-                required
-              />
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem", marginBottom: "1.5rem" }}>
+              <div>
+                <label className="small" style={{ display: 'block', marginBottom: '0.5rem', marginLeft: '0.25rem' }}>First Name</label>
+                <input
+                  name="firstName"
+                  placeholder="John"
+                  className="input"
+                  value={form.firstName}
+                  onChange={onChange}
+                  required
+                />
+              </div>
+              <div>
+                <label className="small" style={{ display: 'block', marginBottom: '0.5rem', marginLeft: '0.25rem' }}>Last Name</label>
+                <input
+                  name="lastName"
+                  placeholder="Doe"
+                  className="input"
+                  value={form.lastName}
+                  onChange={onChange}
+                  required
+                />
+              </div>
             </div>
 
-            <div style={{ marginTop: 12 }}>
+            <div style={{ marginBottom: "1.5rem" }}>
+              <label className="small" style={{ display: 'block', marginBottom: '0.5rem', marginLeft: '0.25rem' }}>Email Address</label>
               <input
                 name="email"
-                placeholder="Email"
+                placeholder="john@example.com"
                 className="input"
                 value={form.email}
                 onChange={onChange}
@@ -103,79 +73,77 @@ export default function Signup() {
               />
             </div>
 
-            <div
-              style={{
-                marginTop: 12,
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: 12,
-              }}
-            >
-              <input
-                name="mobileNumber"
-                placeholder="Mobile number"
-                className="input"
-                value={form.mobileNumber}
-                onChange={onChange}
-              />
-              <input
-                name="app"
-                placeholder="App name (optional)"
-                className="input"
-                value={form.app}
-                onChange={onChange}
-              />
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem", marginBottom: "1.5rem" }}>
+              <div>
+                <label className="small" style={{ display: 'block', marginBottom: '0.5rem', marginLeft: '0.25rem' }}>Mobile Number</label>
+                <input
+                  name="mobileNumber"
+                  placeholder="+1 234 567 890"
+                  className="input"
+                  value={form.mobileNumber}
+                  onChange={onChange}
+                />
+              </div>
+              <div>
+                <label className="small" style={{ display: 'block', marginBottom: '0.5rem', marginLeft: '0.25rem' }}>App Name</label>
+                <input
+                  name="app"
+                  placeholder="My Awesome App"
+                  className="input"
+                  value={form.app}
+                  onChange={onChange}
+                />
+              </div>
             </div>
 
-            <div style={{ marginTop: 12 }}>
+            <div style={{ marginBottom: "1.5rem" }}>
+              <label className="small" style={{ display: 'block', marginBottom: '0.5rem', marginLeft: '0.25rem' }}>Description</label>
               <input
                 name="description"
-                placeholder="Description (optional)"
+                placeholder="Brief description of your app..."
                 className="input"
                 value={form.description}
                 onChange={onChange}
               />
             </div>
 
-            <div
-              style={{
-                marginTop: 12,
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: 12,
-              }}
-            >
-              <input
-                name="password"
-                type="password"
-                placeholder="Password"
-                className="input"
-                value={form.password}
-                onChange={onChange}
-                required
-              />
-              <input
-                name="confirmPassword"
-                type="password"
-                placeholder="Confirm password"
-                className="input"
-                value={form.confirmPassword}
-                onChange={onChange}
-                required
-              />
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem", marginBottom: "2rem" }}>
+              <div>
+                <label className="small" style={{ display: 'block', marginBottom: '0.5rem', marginLeft: '0.25rem' }}>Password</label>
+                <input
+                  name="password"
+                  type="password"
+                  placeholder="••••••••"
+                  className="input"
+                  value={form.password}
+                  onChange={onChange}
+                  required
+                />
+              </div>
+              <div>
+                <label className="small" style={{ display: 'block', marginBottom: '0.5rem', marginLeft: '0.25rem' }}>Confirm Password</label>
+                <input
+                  name="confirmPassword"
+                  type="password"
+                  placeholder="••••••••"
+                  className="input"
+                  value={form.confirmPassword}
+                  onChange={onChange}
+                  required
+                />
+              </div>
             </div>
 
-            <div style={{ marginTop: 16, display: "flex", gap: 8 }}>
-              <button className="button" type="submit" disabled={loading}>
+            <div style={{ display: "flex", gap: "1rem" }}>
+              <button className="button" type="submit" disabled={loading} style={{ flex: 1 }}>
                 {loading ? "Signing up..." : "Sign up"}
               </button>
 
-              {/* Already have account → Login */}
               <button
                 type="button"
                 className="btn-ghost"
                 onClick={() => router.push("/login")}
-                style={{ width: "100%" }}
+                style={{ flex: 1 }}
               >
                 Already have an account? Login
               </button>
