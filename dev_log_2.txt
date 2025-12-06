@@ -286,3 +286,42 @@ Expression expected
  GET /api/manage/getRoles 404 in 35ms (compile: 10ms, render: 24ms)
  GET /_next/data/development/client/dashboard.json 200 in 116ms (compile: 103ms, render: 13ms)
  GET / 200 in 155ms (compile: 101ms, render: 54ms)
+ Γ¿» ./client-portal/pages/api/auth/signup.js:1:9
+Parsing ecmascript source code failed
+> 1 |         }
+    |         ^
+  2 |
+  3 | // Create new user
+  4 | const newUser = {
+
+Expression expected
+
+
+ POST /api/auth/signup 500 in 334ms (compile: 137ms, render: 197ms)
+ GET /signup 500 in 338ms (compile: 217ms, render: 121ms)
+ GET /signup 500 in 56ms (compile: 28ms, render: 28ms)
+ ΓÜá Found a change in next.config.js. Restarting the server to apply the changes...
+ ΓÜá Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of C:\Users\ayush\package-lock.json as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * C:\Users\ayush\client-portal\package-lock.json
+
+   Γû▓ Next.js 16.0.3 (Turbopack)
+   - Local:         http://localhost:3003
+   - Network:       http://10.62.120.194:3003
+   - Environments: .env.local
+
+ Γ£ô Starting...
+ Γ£ô Ready in 3.1s
+ GET / 200 in 2.8s (compile: 2.6s, render: 261ms)
+ GET /login 200 in 2.8s (compile: 2.7s, render: 125ms)
+ GET /signup 200 in 2.9s (compile: 2.8s, render: 43ms)
+ GET /login 200 in 79ms (compile: 10ms, render: 69ms)
+ GET /signup 200 in 79ms (compile: 38ms, render: 41ms)
+ GET /login 200 in 105ms (compile: 20ms, render: 85ms)
+ GET /signup 200 in 104ms (compile: 52ms, render: 52ms)
+ Γ£ô Compiled in 350ms
+(node:25564) [DEP0060] DeprecationWarning: The `util._extend` API is deprecated. Please use Object.assign() instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)

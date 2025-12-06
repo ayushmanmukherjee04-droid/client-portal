@@ -18,13 +18,24 @@ export function getAccessToken() {
  * @param {object} options - Fetch options (method, body, etc.)
  */
 export async function apiRequest(endpoint, options = {}) {
-    const url = API_CONFIG.getUrl(endpoint);
+    let url = API_CONFIG.getUrl(endpoint);
+
+    // Handle URL parameters (e.g. :appId)
+    if (options.params) {
+        Object.keys(options.params).forEach(key => {
+            url = url.replace(`:${key}`, options.params[key]);
+        });
+    }
+
     const token = getAccessToken();
 
     const defaultOptions = {
         headers: {
             'Content-Type': 'application/json',
-            ...(token && { 'Authorization': `Bearer ${token}` }),
+            ...(token && {
+                'Authorization': `Bearer ${token}`,
+                'token': token
+            }),
             ...options.headers,
         },
         credentials: 'include',
@@ -70,19 +81,21 @@ export async function apiPost(endpoint, body) {
 /**
  * PUT request helper
  */
-export async function apiPut(endpoint, body) {
+export async function apiPut(endpoint, body, params) {
     return apiRequest(endpoint, {
         method: 'PUT',
         body: JSON.stringify(body),
+        params: params
     });
 }
 
 /**
  * DELETE request helper
  */
-export async function apiDelete(endpoint, body) {
+export async function apiDelete(endpoint, body, params) {
     return apiRequest(endpoint, {
         method: 'DELETE',
         body: body ? JSON.stringify(body) : undefined,
+        params: params
     });
 }

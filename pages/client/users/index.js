@@ -1,11 +1,11 @@
 // Users Management Page
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import Navbar from '../../components/Navbar';
-import Table from '../../components/Table';
-import SearchBar from '../../components/SearchBar';
-import Modal from '../../components/Modal';
-import { apiGet, apiPost } from '../../utils/apiClient';
+import Navbar from '../../../components/Navbar';
+import Table from '../../../components/Table';
+import SearchBar from '../../../components/SearchBar';
+import Modal from '../../../components/Modal';
+import { apiGet, apiPost } from '../../../utils/apiClient';
 
 export default function Users() {
     const router = useRouter();
@@ -46,11 +46,14 @@ export default function Users() {
                 endpoint = 'getAllUser';
         }
 
+        console.log('Fetching users from endpoint:', endpoint);
         const result = await apiGet(endpoint);
+        console.log('Fetch result:', result);
 
         if (result.success) {
             setUsers(Array.isArray(result.data) ? result.data : []);
         } else {
+            console.error('Fetch error:', result.error);
             setError(result.error || 'Failed to fetch users');
             setUsers([]);
         }

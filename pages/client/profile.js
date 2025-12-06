@@ -1,8 +1,7 @@
 // pages/client/profile.js
 import cookie from "cookie";
 import Navbar from "../../components/Navbar";
-import fs from 'fs';
-import path from 'path';
+
 
 export async function getServerSideProps(ctx) {
   try {
@@ -15,42 +14,42 @@ export async function getServerSideProps(ctx) {
       };
     }
 
-    // Extract user ID from mock token
-    const userId = token.replace("mock_token_", "");
-
-    // Read user from local file (mock database)
-    const filePath = path.join(process.cwd(), 'data', 'users.json');
-    let user = null;
-
-    if (fs.existsSync(filePath)) {
-      const fileData = fs.readFileSync(filePath, 'utf8');
-      if (fileData) {
-        const users = JSON.parse(fileData);
-        user = users.find(u => u.id === userId) || null;
+    // Fetch user profile from backend
+    // Using the token/user endpoint which seems to return user details
+    const response = await fetch(`${process.env.BACKEND_BASE_URL || 'https://721bms2s-8000.inc1.devtunnels.ms'}/api/AaaS/v1/token/user`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
       }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.data) {
+      console.error("Failed to fetch profile:", data);
+      // If token is invalid, redirect to login
+      if (response.status === 401 || response.status === 403) {
+        return {
+          redirect: { destination: "/login", permanent: false },
+        };
+      }
+      throw new Error(data.message || "Failed to fetch profile");
     }
 
-    if (!user) {
-      return {
-        redirect: { destination: "/login", permanent: false },
-      };
-    }
+    // The backend seems to return an array or object based on docs. 
+    // Docs say: return array of user with id,access_token,refresh_token,first_name,last_name,email,app_name
+    // Let's handle both array (take first item) or object
+    const user = Array.isArray(data.data) ? data.data[0] : data.data;
 
-    // Don't send password to client
-    const { password, ...safeUser } = user;
+    return { props: { profile: user } };
 
-    return { props: { profile: safeUser } };
   } catch (error) {
     console.error("Profile SSP error:", error);
     return {
       props: {
-        profile: {
-          firstName: 'Error',
-          lastName: 'User',
-          email: 'error@example.com',
-          id: 'error',
-          createdAt: new Date().toISOString()
-        }
+        error: error.message,
+        profile: null
       }
     };
   }
@@ -95,6 +94,12 @@ export default function Profile({ profile }) {
               {profile.firstName || 'User'} {profile.lastName || ''}
             </h1>
             <p className="small" style={{ fontSize: '1rem' }}>{profile.email || 'No email'}</p>
+            {profile.app_name && (
+              <div style={{ marginTop: '1rem', background: 'var(--card-bg)', padding: '0.5rem 1rem', borderRadius: '20px', display: 'inline-block', border: '1px solid var(--glass-border)' }}>
+                <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginRight: '0.5rem' }}>App:</span>
+                <span style={{ fontWeight: '500' }}>{profile.app_name}</span>
+              </div>
+            )}
           </div>
 
           <div style={{ display: 'grid', gap: '1.5rem', borderTop: '1px solid var(--glass-border)', paddingTop: '2rem' }}>

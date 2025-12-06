@@ -49,12 +49,15 @@ export default function Apps() {
   const handleDeleteApp = async () => {
     if (!selectedApp) return;
 
-    const result = await apiDelete('deleteApp', { app_id: selectedApp.id });
+    const result = await apiDelete('deleteApp', null, { appId: selectedApp.id });
 
     if (result.success) {
       setShowDeleteModal(false);
+      // Mark app as deleted locally instead of refetching
+      setApps(apps.map(app =>
+        app.id === selectedApp.id ? { ...app, _deleted: true } : app
+      ));
       setSelectedApp(null);
-      fetchApps();
     } else {
       setError(result.error || 'Failed to delete app');
     }
@@ -108,35 +111,50 @@ export default function Apps() {
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
             {apps.map((app) => (
-              <div key={app.id} className="card" style={{ position: 'relative' }}>
+              <div key={app.id} className="card" style={{ position: 'relative', opacity: app._deleted ? 0.7 : 1 }}>
                 <h3 style={{ marginBottom: '0.5rem' }}>{app.app_name}</h3>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '1.5rem' }}>
                   {app.description || 'No description'}
                 </p>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                  <button
-                    className="button"
-                    onClick={() => handleGetUrlAndToken(app)}
-                    style={{ width: '100%' }}
-                  >
-                    Get URL & Token
-                  </button>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
-                    <button
-                      className="btn-ghost"
-                      onClick={() => router.push(`/client/apps/${app.id}/edit`)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="btn-ghost"
-                      onClick={() => openDeleteModal(app)}
-                      style={{ borderColor: '#ef4444', color: '#ef4444' }}
-                    >
-                      Delete
-                    </button>
-                  </div>
+                  {app._deleted ? (
+                    <div style={{
+                      textAlign: 'center',
+                      padding: '0.75rem',
+                      background: 'rgba(239, 68, 68, 0.1)',
+                      color: '#ef4444',
+                      borderRadius: '8px',
+                      fontWeight: '500'
+                    }}>
+                      App Removed
+                    </div>
+                  ) : (
+                    <>
+                      <button
+                        className="button"
+                        onClick={() => handleGetUrlAndToken(app)}
+                        style={{ width: '100%' }}
+                      >
+                        Get URL & Token
+                      </button>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+                        <button
+                          className="btn-ghost"
+                          onClick={() => router.push(`/client/apps/${app.id}/edit`)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="btn-ghost"
+                          onClick={() => openDeleteModal(app)}
+                          style={{ borderColor: '#ef4444', color: '#ef4444' }}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             ))}

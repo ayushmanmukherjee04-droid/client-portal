@@ -9,10 +9,12 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [err, setErr] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
 
   async function submit(e) {
     e.preventDefault();
     setErr("");
+    setSuccessMsg("");
 
     try {
       const r = await fetch(API_CONFIG.getUrl('login'), {
@@ -32,8 +34,25 @@ export default function Login() {
         return;
       }
 
+      setSuccessMsg("Login successful! Redirecting...");
+
+      // Save token to cookie
+      let token = data.data?.access_token || data.data?.token || data.access_token || data.token;
+
+      // Handle case where token is an object (e.g. { access_token: "..." })
+      if (token && typeof token === 'object' && token.access_token) {
+        token = token.access_token;
+      }
+
+      if (token && typeof token === 'string') {
+        console.log("Saving access_token to cookie");
+        document.cookie = `access_token=${token}; path=/; max-age=86400; SameSite=Lax`;
+      } else {
+        console.error("Login successful but no valid token string found in response:", data);
+      }
+
       console.log("Redirecting to dashboard...");
-      router.push("/client/dashboard");
+      setTimeout(() => router.push("/client/dashboard"), 1000);
     } catch (error) {
       setErr(error.message || "Network error");
     }
@@ -49,6 +68,12 @@ export default function Login() {
           {err && (
             <div style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', color: '#fca5a5', padding: '0.75rem', borderRadius: '8px', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
               {err}
+            </div>
+          )}
+
+          {successMsg && (
+            <div style={{ background: 'rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.2)', color: '#86efac', padding: '0.75rem', borderRadius: '8px', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+              {successMsg}
             </div>
           )}
 

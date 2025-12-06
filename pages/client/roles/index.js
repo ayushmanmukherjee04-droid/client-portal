@@ -25,8 +25,14 @@ export default function Roles() {
     });
     const [isEdit, setIsEdit] = useState(false);
 
+    // Assignment State
+    const [users, setUsers] = useState([]);
+    const [selectedUserId, setSelectedUserId] = useState('');
+    const [assignLoading, setAssignLoading] = useState(false);
+
     useEffect(() => {
         fetchRoles();
+        fetchUsers();
     }, []);
 
     useEffect(() => {
@@ -46,6 +52,13 @@ export default function Roles() {
             setRoles([]);
         }
         setLoading(false);
+    };
+
+    const fetchUsers = async () => {
+        const result = await apiGet('getAllUser');
+        if (result.success) {
+            setUsers(Array.isArray(result.data) ? result.data : []);
+        }
     };
 
     const filterRoles = () => {
@@ -114,7 +127,31 @@ export default function Roles() {
 
     const openAssignRoleModal = (role) => {
         setSelectedRole(role);
+        setSelectedUserId('');
         setShowAssignModal(true);
+    };
+
+    const handleAssignRole = async () => {
+        if (!selectedRole || !selectedUserId) return;
+
+        setAssignLoading(true);
+        setError('');
+
+        const result = await apiPost('postAssinRole', {
+            role_id: selectedRole.id,
+            user_id: selectedUserId,
+            app_id: selectedRole.app_id // Assuming role has app_id
+        });
+
+        setAssignLoading(false);
+
+        if (result.success) {
+            setShowAssignModal(false);
+            // Optionally show success message
+            alert('Role assigned successfully');
+        } else {
+            setError(result.error || 'Failed to assign role');
+        }
     };
 
     const columns = [
@@ -295,12 +332,37 @@ export default function Roles() {
                 onClose={() => setShowAssignModal(false)}
                 title={`Assign Role: ${selectedRole?.name}`}
             >
-                <p style={{ marginBottom: '1rem', color: 'var(--text-secondary)' }}>
-                    Role assignment functionality would connect to user selection and assignment API
-                </p>
-                <button className="button" onClick={() => setShowAssignModal(false)} style={{ width: '100%' }}>
-                    Close
-                </button>
+                <div style={{ marginBottom: '1.5rem' }}>
+                    <label className="small" style={{ display: 'block', marginBottom: '0.5rem' }}>
+                        Select User
+                    </label>
+                    <select
+                        className="input"
+                        value={selectedUserId}
+                        onChange={(e) => setSelectedUserId(e.target.value)}
+                    >
+                        <option value="">-- Select a user --</option>
+                        {users.map(user => (
+                            <option key={user.id} value={user.id}>
+                                {user.first_name} {user.last_name} ({user.email})
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                    <button className="btn-ghost" onClick={() => setShowAssignModal(false)} style={{ flex: 1 }}>
+                        Cancel
+                    </button>
+                    <button
+                        className="button"
+                        onClick={handleAssignRole}
+                        disabled={assignLoading || !selectedUserId}
+                        style={{ flex: 1 }}
+                    >
+                        {assignLoading ? 'Assigning...' : 'Assign Role'}
+                    </button>
+                </div>
             </Modal>
         </>
     );

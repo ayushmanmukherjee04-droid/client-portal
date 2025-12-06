@@ -35,6 +35,7 @@ export default function Signup() {
 
     setLoading(true);
     try {
+      console.log(API_CONFIG.getUrl('signup'))
       const r = await fetch(API_CONFIG.getUrl('signup'), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -42,14 +43,26 @@ export default function Signup() {
         credentials: 'include', // Important: enables cookies from backend
       });
 
-      const data = await r.json();
+      const contentType = r.headers.get("content-type");
+      let data;
+      console.log(r)
+      if (contentType && contentType.indexOf("application/json") !== -1) {
+        data = await r.json();
+        console.log("Signup response data:", data);
+      } else {
+        const text = await r.text();
+        console.error("Received non-JSON response:", text);
+        throw new Error("Server returned non-JSON response (likely HTML error page)");
+      }
+
       setLoading(false);
 
       if (data.status === 'success') {
         setSuccessMsg(data.message || "Signup successful. Redirecting...");
         setTimeout(() => router.push("/login"), 1200);
       } else {
-        setErr(data.message || "Signup failed");
+        console.log("Signup failed data:", data);
+        setErr(data.message || JSON.stringify(data) || "Signup failed");
       }
     } catch (error) {
       setLoading(false);
