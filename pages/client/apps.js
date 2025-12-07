@@ -174,7 +174,7 @@ export default function Apps() {
         {appUrlData && (
           <div>
             <div style={{ marginBottom: '1.5rem' }}>
-              <label className="small" style={{ display: 'block', marginBottom: '0.5rem' }}>URL</label>
+              <label className="small" style={{ display: 'block', marginBottom: '0.5rem' }}>User Signup URL</label>
               <div style={{
                 background: 'var(--card-bg)',
                 padding: '0.75rem',
@@ -184,7 +184,7 @@ export default function Apps() {
                 fontFamily: 'monospace',
                 fontSize: '0.875rem'
               }}>
-                {appUrlData.url || 'N/A'}
+                {(appUrlData.url || 'N/A') + '?action=signup'}
               </div>
             </div>
             <div style={{ marginBottom: '1.5rem' }}>

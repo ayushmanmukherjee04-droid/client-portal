@@ -14,43 +14,34 @@ export async function getServerSideProps(ctx) {
       };
     }
 
-    // Fetch user profile from backend
-    // Using the token/user endpoint which seems to return user details
-    const response = await fetch(`${process.env.BACKEND_BASE_URL || 'https://721bms2s-8000.inc1.devtunnels.ms'}/api/AaaS/v1/token/user`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    });
+    // Decode JWT to get client info
+    try {
+      const payload = token.split('.')[1];
+      const decoded = JSON.parse(Buffer.from(payload, 'base64').toString());
 
-    const data = await response.json();
+      // Use null instead of undefined for Next.js serialization
+      const profile = {
+        id: decoded.id || decoded.client_id || null,
+        email: decoded.email || null,
+        firstName: decoded.firstName || decoded.first_name || null,
+        lastName: decoded.lastName || decoded.last_name || null,
+        mobileNumber: decoded.mobileNumber || decoded.mobile_number || null,
+        app: decoded.app || null,
+        createdAt: decoded.createdAt || decoded.created_at || null
+      };
 
-    if (!response.ok || !data.data) {
-      console.error("Failed to fetch profile:", data);
-      // If token is invalid, redirect to login
-      if (response.status === 401 || response.status === 403) {
-        return {
-          redirect: { destination: "/login", permanent: false },
-        };
-      }
-      throw new Error(data.message || "Failed to fetch profile");
+      return { props: { profile } };
+    } catch (decodeError) {
+      console.error("Failed to decode token:", decodeError);
+      return {
+        redirect: { destination: "/login", permanent: false },
+      };
     }
-
-    // The backend seems to return an array or object based on docs. 
-    // Docs say: return array of user with id,access_token,refresh_token,first_name,last_name,email,app_name
-    // Let's handle both array (take first item) or object
-    const user = Array.isArray(data.data) ? data.data[0] : data.data;
-
-    return { props: { profile: user } };
 
   } catch (error) {
     console.error("Profile SSP error:", error);
     return {
-      props: {
-        error: error.message,
-        profile: null
-      }
+      redirect: { destination: "/login", permanent: false },
     };
   }
 }

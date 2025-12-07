@@ -27,12 +27,14 @@ export default function Roles() {
 
     // Assignment State
     const [users, setUsers] = useState([]);
+    const [apps, setApps] = useState([]);
     const [selectedUserId, setSelectedUserId] = useState('');
     const [assignLoading, setAssignLoading] = useState(false);
 
     useEffect(() => {
         fetchRoles();
         fetchUsers();
+        fetchApps();
     }, []);
 
     useEffect(() => {
@@ -58,6 +60,13 @@ export default function Roles() {
         const result = await apiGet('getAllUser');
         if (result.success) {
             setUsers(Array.isArray(result.data) ? result.data : []);
+        }
+    };
+
+    const fetchApps = async () => {
+        const result = await apiGet('getApp');
+        if (result.success) {
+            setApps(Array.isArray(result.data) ? result.data : []);
         }
     };
 
@@ -94,20 +103,49 @@ export default function Roles() {
     const handleRoleSubmit = async () => {
         setError('');
 
+        // Validate required fields
+        if (!roleFormData.name || roleFormData.name.trim() === '') {
+            setError('Role name is required');
+            return;
+        }
+
+        if (!isEdit && (!roleFormData.app_id || roleFormData.app_id === '')) {
+            setError('Please select an app');
+            return;
+        }
+
         const endpoint = isEdit ? 'putUpdateRole' : 'postCreateRole';
+
+        // Convert app_id to integer and ensure description is not undefined
         const payload = isEdit
-            ? { ...roleFormData, role_id: selectedRole.id }
-            : roleFormData;
+            ? {
+                name: roleFormData.name.trim(),
+                description: roleFormData.description?.trim() || '',
+                role_id: selectedRole.id
+            }
+            : {
+                app_id: parseInt(roleFormData.app_id, 10),
+                name: roleFormData.name.trim(),
+                description: roleFormData.description?.trim() || ''
+            };
+
+        console.log('Submitting role with payload:', payload);
 
         const result = isEdit
             ? await apiPut(endpoint, payload)
             : await apiPost(endpoint, payload);
 
+        console.log('Role submission result:', result);
+
         if (result.success) {
             setShowRoleModal(false);
+            setRoleFormData({ name: '', description: '', app_id: '' });
             fetchRoles();
         } else {
-            setError(result.error || `Failed to ${isEdit ? 'update' : 'create'} role`);
+            // Show detailed error message from backend
+            const errorMsg = result.message || result.error || `Failed to ${isEdit ? 'update' : 'create'} role`;
+            console.error('Role submission error:', result);
+            setError(errorMsg);
         }
     };
 
@@ -280,15 +318,19 @@ export default function Roles() {
 
                     <div style={{ marginBottom: '2rem' }}>
                         <label className="small" style={{ display: 'block', marginBottom: '0.5rem' }}>
-                            App ID *
+                            App *
                         </label>
-                        <input
+                        <select
                             className="input"
-                            type="number"
                             value={roleFormData.app_id}
                             onChange={(e) => setRoleFormData({ ...roleFormData, app_id: e.target.value })}
                             required
-                        />
+                        >
+                            <option value="">-- Select an app --</option>
+                            {apps.map(app => (
+                                <option key={app.id} value={app.id}>{app.app_name}</option>
+                            ))}
+                        </select>
                     </div>
 
                     <div style={{ display: 'flex', gap: '1rem' }}>
@@ -334,7 +376,7 @@ export default function Roles() {
             >
                 <div style={{ marginBottom: '1.5rem' }}>
                     <label className="small" style={{ display: 'block', marginBottom: '0.5rem' }}>
-                        Select User
+                        Select User (from {selectedRole?.app_name})
                     </label>
                     <select
                         className="input"
@@ -342,12 +384,19 @@ export default function Roles() {
                         onChange={(e) => setSelectedUserId(e.target.value)}
                     >
                         <option value="">-- Select a user --</option>
-                        {users.map(user => (
-                            <option key={user.id} value={user.id}>
-                                {user.first_name} {user.last_name} ({user.email})
-                            </option>
-                        ))}
+                        {users
+                            .filter(user => user.app_id === selectedRole?.app_id || user.app_name === selectedRole?.app_name)
+                            .map(user => (
+                                <option key={user.id} value={user.id}>
+                                    {user.first_name} {user.last_name} ({user.email})
+                                </option>
+                            ))}
                     </select>
+                    {users.filter(user => user.app_id === selectedRole?.app_id || user.app_name === selectedRole?.app_name).length === 0 && (
+                        <p className="small" style={{ color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
+                            No users found for this app. Create users via the app's signup API first.
+                        </p>
+                    )}
                 </div>
 
                 <div style={{ display: 'flex', gap: '1rem' }}>

@@ -24,6 +24,7 @@ const API_CONFIG = {
 
         // User management endpoints
         getAllUser: '/api/AaaS/v1/user/all',
+        userSignup: '/api/AaaS/user/v1', // Create new user (note: different path - user auth microservice)
         banUser: '/api/AaaS/v1/user/ban',
         unbanUser: '/api/AaaS/v1/user/unban',
         getBannedUser: '/api/AaaS/v1/user/banned',

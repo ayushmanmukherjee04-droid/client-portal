@@ -87,9 +87,9 @@ export default function ConnectApp() {
           {result && (
             <div style={{ marginTop: 18 }}>
               <div className="card">
-                <p style={{ margin: 0, fontWeight: 700 }}>Connection URL</p>
+                <p style={{ margin: 0, fontWeight: 700 }}>User Signup URL</p>
                 <div className="small" style={{ marginTop: 8, wordBreak: "break-all" }}>
-                  {result.url || result.connection_url || "No URL returned"}
+                  {(result.url || result.connection_url || "No URL returned") + "?action=signup"}
                 </div>
 
                 <hr style={{ margin: "12px 0" }} />
@@ -119,7 +119,7 @@ export default function ConnectApp() {
                 </div>
 
                 <p className="small" style={{ marginTop: 10 }}>
-                  Keep this token secure. Only share it with trusted services.
+                  Use this URL and token in your app's signup page to create users via the AaaS API.
                 </p>
               </div>
             </div>
